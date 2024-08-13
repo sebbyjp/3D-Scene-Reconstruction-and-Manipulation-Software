@@ -137,7 +137,8 @@ def reconstruct_3d_scene(input_data, camera_params, scene_repr):
 
     elif scene_repr == "neural radiance field":
         # Reconstruct the 3D scene as a neural radiance field from the input data and camera parameters
-        scene_3d = nerf.reconstruct(input_data, camera_params)
+        print("Neural radiance field reconstruction is not implemented")
+        scene_3d = None
 
     # Return the 3D scene
     return scene_3d
