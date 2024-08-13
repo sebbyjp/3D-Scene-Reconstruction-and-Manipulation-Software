@@ -2,7 +2,6 @@
 import cv2 as cv
 import torch as th
 import numpy as np
-import pytorch3d
 import pyrender
 import pyvista
 import matplotlib
@@ -123,7 +122,9 @@ def reconstruct_3d_scene(input_data, camera_params, scene_repr):
 
     elif scene_repr == "mesh":
         # Reconstruct the 3D scene as a mesh from the input data and camera parameters
-        scene_3d = pytorch3d.reconstruct(input_data, camera_params)
+        # This is a placeholder. You'll need to implement an alternative method or install pytorch3d
+        scene_3d = None
+        print("Mesh reconstruction is not implemented without pytorch3d")
 
     elif scene_repr == "texture map":
         # Reconstruct the 3D scene as a texture map from the input data and camera parameters
