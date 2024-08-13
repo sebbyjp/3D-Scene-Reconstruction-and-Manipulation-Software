@@ -2,6 +2,16 @@
 import cv2 as cv
 import numpy as np
 
+# Try to import optional modules
+try:
+    import nerf
+    import nerf_pl
+    import nerfies
+    import nerf_synthetic
+    NERF_AVAILABLE = True
+except ImportError:
+    NERF_AVAILABLE = False
+
 # Import the utility functions and classes from the utils file
 from utils import *
 
@@ -130,8 +140,11 @@ def reconstruct_3d_scene(input_data, camera_params, scene_repr):
 
     elif scene_repr == "neural radiance field":
         # Reconstruct the 3D scene as a neural radiance field from the input data and camera parameters
-        print("Neural radiance field reconstruction is not implemented")
-        scene_3d = None
+        if NERF_AVAILABLE:
+            scene_3d = nerf.reconstruct(input_data, camera_params)
+        else:
+            print("Neural radiance field reconstruction is not available. Required modules are not installed.")
+            scene_3d = None
 
     # Return the 3D scene
     return scene_3d
