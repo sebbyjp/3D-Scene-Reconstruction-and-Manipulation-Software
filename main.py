@@ -3,6 +3,7 @@ import cv2 as cv
 import torch as th
 import OpenGL as gl
 import numpy as np
+from reconstruction import estimate_camera_params
 import configparser
 import pickle
 import h5py
@@ -42,12 +43,20 @@ def main():
     input_data = load_input_data(input_path)
     input_data = preprocess_input_data(input_data)
 
-    # Estimate or load the camera pose and calibration parameters
-    camera_params = input("Enter the camera pose and calibration parameters, or leave blank to estimate them: ")
+    # Estimate or load the camera parameters
+    camera_params = input("Enter the path to a calibration image, or leave blank to use default parameters: ")
     if camera_params == "":
-        camera_params = estimate_camera_params(input_data)
+        camera_matrix = np.array([[800, 0, 400], [0, 800, 300], [0, 0, 1]])
+        dist_coeffs = np.zeros((5,1))
     else:
-        camera_params = load_camera_params(camera_params)
+        calibration_image = cv.imread(camera_params)
+        camera_matrix, dist_coeffs = estimate_camera_params(calibration_image)
+        if camera_matrix is None or dist_coeffs is None:
+            print("Using default camera parameters.")
+            camera_matrix = np.array([[800, 0, 400], [0, 800, 300], [0, 0, 1]])
+            dist_coeffs = np.zeros((5,1))
+    
+    camera_params = (camera_matrix, dist_coeffs)
 
     # Choose and perform the 3D scene reconstruction
     scene_repr = input("Choose the type of 3D scene representation: ")

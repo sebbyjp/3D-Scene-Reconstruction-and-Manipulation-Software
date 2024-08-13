@@ -84,31 +84,37 @@ def estimate_matrices(keypoints, matches):
     # Return the matrices
     return homographies, fundamentals, essentials
 
-# Define the function that estimates the camera pose and calibration parameters from the matrices
-def estimate_camera_params(matrices):
-    # Initialize the lists of camera pose and calibration parameters
-    camera_pose = []
-    camera_calib = []
-
-    # Loop through the pairs of matrices
-    for i in range(len(matrices) - 1):
-        # Extract the essential matrix from the matrices
-        E = matrices[i]
-
-        # Recover the relative camera rotation and translation from the essential matrix
-        R, t, mask = cv.recoverPose(E)
-
-        # Append the camera rotation and translation to the camera pose list
-        camera_pose.append((R, t))
-
-        # Calibrate the camera using the essential matrix
-        K, R, t, mask = cv.calibrateCamera(E)
-
-        # Append the camera intrinsic matrix to the camera calibration list
-        camera_calib.append(K)
-
-    # Return the camera pose and calibration parameters
-    return camera_pose, camera_calib
+# Define the function that estimates the camera parameters from a single image
+def estimate_camera_params(image):
+    # Define the size of the chessboard (number of inner corners)
+    chessboard_size = (9, 6)
+    
+    # Prepare object points (0,0,0), (1,0,0), (2,0,0) ..., (8,5,0)
+    objp = np.zeros((chessboard_size[0] * chessboard_size[1], 3), np.float32)
+    objp[:,:2] = np.mgrid[0:chessboard_size[0], 0:chessboard_size[1]].T.reshape(-1,2)
+    
+    # Arrays to store object points and image points
+    objpoints = [] # 3d points in real world space
+    imgpoints = [] # 2d points in image plane
+    
+    # Convert image to grayscale
+    gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
+    
+    # Find the chessboard corners
+    ret, corners = cv.findChessboardCorners(gray, chessboard_size, None)
+    
+    if ret:
+        objpoints.append(objp)
+        imgpoints.append(corners)
+        
+        # Calibrate camera
+        ret, camera_matrix, dist_coeffs, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
+        
+        # Return camera matrix and distortion coefficients
+        return camera_matrix, dist_coeffs
+    else:
+        print("Chessboard corners not found. Cannot estimate camera parameters.")
+        return None, None
 
 # Define the function that reconstructs the 3D scene from the input data, camera parameters, and scene representation
 def reconstruct_3d_scene(input_data, camera_params, scene_repr):
