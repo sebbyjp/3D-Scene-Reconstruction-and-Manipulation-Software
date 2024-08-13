@@ -8,7 +8,7 @@ import open3d
 import torchvision
 import detectron2
 import pytorch3d
-import stylegan2-ada-pytorch
+import stylegan2_ada_pytorch
 import pix2pixHD
 
 # Import the utility functions and classes from the utils file
