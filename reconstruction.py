@@ -117,9 +117,6 @@ def reconstruct_3d_scene(input_data, camera_params, scene_repr):
     # Initialize the 3D scene
     scene_3d = None
 
-    # Introduce an intentional error
-    nonexistent_function()
-
     # Check the type of scene representation
     if scene_repr == "point cloud":
         # Reconstruct the 3D scene as a point cloud from the input data and camera parameters
