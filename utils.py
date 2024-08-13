@@ -1,10 +1,11 @@
 # Import the necessary libraries and frameworks
 import cv2 as cv
-import torch as th
-import OpenGL as gl
 import numpy as np
-import sklearn
-import torchmetrics
+import pickle
+import h5py
+import imageio
+from skimage.metrics import structural_similarity as ssim
+from sklearn.metrics import mean_squared_error
 
 # Define the function that loads the input data from a path
 def load_input_data(input_path):
@@ -96,20 +97,22 @@ def save_output_data(output_data, output_path):
 
 # Define the function that evaluates the output data, using metrics such as mean squared error, structural similarity index, or frames per second
 def evaluate_output_data(output_data, input_data):
-    # Initialize the metrics
-    mse = sklearn.metrics.mean_squared_error(input_data, output_data)
-    ssim = sklearn.metrics.structural_similarity(input_data, output_data, multichannel=True)
-    fps = torchmetrics.FPS()
+    # Ensure input_data and output_data are numpy arrays
+    input_data = np.array(input_data)
+    output_data = np.array(output_data)
 
-    # Update the metrics with the output data
-    fps.update(output_data)
+    # Compute MSE
+    mse = mean_squared_error(input_data.flatten(), output_data.flatten())
 
-    # Compute the metrics
-    mse = mse.compute()
-    ssim = ssim.compute()
-    fps = fps.compute()
+    # Compute SSIM
+    ssim_value = ssim(input_data, output_data, multichannel=True)
+
+    # Compute FPS (assuming output_data is a list of frames)
+    fps = len(output_data) / 30  # Assuming 30 seconds of video
 
     # Print the metrics
-    print("Mean Squared Error: {:.4f}".format(mse))
-    print("Structural Similarity Index: {:.4f}".format(ssim))
-    print("Frames Per Second: {:.4f}".format(fps))
+    print(f"Mean Squared Error: {mse:.4f}")
+    print(f"Structural Similarity Index: {ssim_value:.4f}")
+    print(f"Frames Per Second: {fps:.4f}")
+
+    return mse, ssim_value, fps

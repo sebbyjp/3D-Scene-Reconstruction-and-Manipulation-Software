@@ -72,6 +72,11 @@ def main():
     print("The output data has been saved in the specified path, and the quality and performance of the software has been measured.")
     print("Thank you for using the software. Have a nice day!")
 
-# Execute the main function
+# Execute the main function or run tests
 if __name__ == "__main__":
-    main()
+    import sys
+    if len(sys.argv) > 1 and sys.argv[1] == "test":
+        import pytest
+        pytest.main(["-v", "test_utils.py"])
+    else:
+        main()
