@@ -86,35 +86,31 @@ def estimate_matrices(keypoints, matches):
 
 # Define the function that estimates the camera parameters from a single image
 def estimate_camera_params(image):
-    # Define the size of the chessboard (number of inner corners)
-    chessboard_size = (9, 6)
-    
-    # Prepare object points (0,0,0), (1,0,0), (2,0,0) ..., (8,5,0)
-    objp = np.zeros((chessboard_size[0] * chessboard_size[1], 3), np.float32)
-    objp[:,:2] = np.mgrid[0:chessboard_size[0], 0:chessboard_size[1]].T.reshape(-1,2)
-    
-    # Arrays to store object points and image points
-    objpoints = [] # 3d points in real world space
-    imgpoints = [] # 2d points in image plane
-    
     # Convert image to grayscale
     gray = cv.cvtColor(image, cv.COLOR_BGR2GRAY)
     
-    # Find the chessboard corners
-    ret, corners = cv.findChessboardCorners(gray, chessboard_size, None)
+    # Detect features in the image
+    sift = cv.SIFT_create()
+    keypoints = sift.detect(gray, None)
     
-    if ret:
-        objpoints.append(objp)
-        imgpoints.append(corners)
-        
-        # Calibrate camera
-        ret, camera_matrix, dist_coeffs, rvecs, tvecs = cv.calibrateCamera(objpoints, imgpoints, gray.shape[::-1], None, None)
-        
-        # Return camera matrix and distortion coefficients
-        return camera_matrix, dist_coeffs
-    else:
-        print("Chessboard corners not found. Cannot estimate camera parameters.")
-        return None, None
+    # Get image dimensions
+    height, width = gray.shape
+    
+    # Estimate focal length based on image size
+    focal_length = max(width, height)
+    
+    # Estimate camera matrix
+    camera_matrix = np.array([
+        [focal_length, 0, width / 2],
+        [0, focal_length, height / 2],
+        [0, 0, 1]
+    ], dtype=np.float32)
+    
+    # Estimate distortion coefficients (assume no distortion for simplicity)
+    dist_coeffs = np.zeros((5, 1), dtype=np.float32)
+    
+    print("Estimated camera parameters for arbitrary camera.")
+    return camera_matrix, dist_coeffs
 
 # Define the function that reconstructs the 3D scene from the input data, camera parameters, and scene representation
 def reconstruct_3d_scene(input_data, camera_params, scene_repr):

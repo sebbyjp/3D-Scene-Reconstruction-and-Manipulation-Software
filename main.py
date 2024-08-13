@@ -43,20 +43,12 @@ def main():
     input_data = load_input_data(input_path)
     input_data = preprocess_input_data(input_data)
 
-    # Estimate or load the camera parameters
-    camera_params = input("Enter the path to a calibration image, or leave blank to use default parameters: ")
-    if camera_params == "":
-        camera_matrix = np.array([[800, 0, 400], [0, 800, 300], [0, 0, 1]])
-        dist_coeffs = np.zeros((5,1))
-    else:
-        calibration_image = cv.imread(camera_params)
-        camera_matrix, dist_coeffs = estimate_camera_params(calibration_image)
-        if camera_matrix is None or dist_coeffs is None:
-            print("Using default camera parameters.")
-            camera_matrix = np.array([[800, 0, 400], [0, 800, 300], [0, 0, 1]])
-            dist_coeffs = np.zeros((5,1))
-    
+    # Estimate camera parameters
+    print("Estimating camera parameters from the first image...")
+    first_image = input_data[0]
+    camera_matrix, dist_coeffs = estimate_camera_params(first_image)
     camera_params = (camera_matrix, dist_coeffs)
+    print("Camera parameters estimated.")
 
     # Choose and perform the 3D scene reconstruction
     scene_repr = input("Choose the type of 3D scene representation: ")
