@@ -1,13 +1,6 @@
 # Import the necessary libraries and frameworks
 import cv2 as cv
-import torch as th
 import numpy as np
-import pyvista
-import matplotlib
-import nerf
-import nerf_pl
-import nerfies
-import nerf_synthetic
 
 # Import the utility functions and classes from the utils file
 from utils import *
