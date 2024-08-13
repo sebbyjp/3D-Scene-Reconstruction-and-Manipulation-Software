@@ -2,7 +2,6 @@
 import cv2 as cv
 import torch as th
 import numpy as np
-import pyrender
 import pyvista
 import matplotlib
 import nerf
@@ -128,7 +127,9 @@ def reconstruct_3d_scene(input_data, camera_params, scene_repr):
 
     elif scene_repr == "texture map":
         # Reconstruct the 3D scene as a texture map from the input data and camera parameters
-        scene_3d = pyrender.reconstruct(input_data, camera_params)
+        # This is a placeholder. You'll need to implement an alternative method or install pyrender
+        scene_3d = None
+        print("Texture map reconstruction is not implemented without pyrender")
 
     elif scene_repr == "depth map":
         # Reconstruct the 3D scene as a depth map from the input data and camera parameters
