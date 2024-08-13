@@ -1,7 +1,6 @@
 # Import the necessary libraries and frameworks
 import cv2 as cv
 import torch as th
-import OpenGL as gl
 import numpy as np
 import pytorch3d
 import pyrender
